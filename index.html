@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            font-weight: normal;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.85em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+                letter-spacing: 1px;
+            }
+
+            .subtitle {
+                font-size: 0.75em;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                gap: 15px;
+            }
+
+            .panel-content {
+                padding: 15px;
+            }
+
+            .upload-area {
+                padding: 30px 15px;
+                min-height: 100px;
+            }
+
+            .upload-area h3 {
+                font-size: 0.8em;
+                word-break: break-word;
+                max-width: 100%;
+            }
+
+            .upload-area p {
+                font-size: 0.75em;
+            }
+
+            .panel {
+                overflow: visible;
+            }
+
+            .panel-content {
+                overflow: visible;
+            }
+        }
+
+        .panel {
+            background: #000;
+            padding: 0;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .panel h2 {
+            color: #fff;
+            margin-bottom: 0;
+            font-size: 0.9em;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .panel-content {
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .upload-area {
+            border: 2px dashed #333;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .upload-area h3 {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .upload-area:hover {
+            border-color: #666;
+        }
+
+        .upload-area.dragover {
+            border-color: #fff;
+        }
+
+        .upload-area h3 {
+            color: #666;
+            font-weight: normal;
+            font-size: 0.85em;
+        }
+
+        .upload-area .filename {
+            color: #fff;
+            font-weight: normal;
+            font-size: 0.85em;
+            word-break: break-all;
+            max-width: 100%;
+            padding: 0 10px;
+        }
+
+        .upload-area .status {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.75em;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .options-section {
+            background: #000;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .option-group {
+            margin-bottom: 25px;
+        }
+
+        .option-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: normal;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .option-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 8px;
+            background: transparent;
+            -webkit-appearance: none;
+            height: 2px;
+        }
+
+        .option-group input[type="range"]::-webkit-slider-track {
+            background: #333;
+            height: 2px;
+        }
+
+        .option-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .option-group input[type="range"]::-moz-range-track {
+            background: #333;
+            height: 2px;
+        }
+
+        .option-group input[type="range"]::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            cursor: pointer;
+            border: none;
+            border-radius: 0;
+        }
+
+        .option-group .value-display {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-option label {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: normal;
+            transition: opacity 0.2s;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button:hover {
+            opacity: 0.8;
+        }
+
+        .button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+
+        #result {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 10px;
+            line-height: 1.1;
+            max-height: 700px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            font-family: 'Courier New', 'Consolas', monospace;
+        }
+
+        @media (max-width: 768px) {
+            #result,
+            #resultColored,
+            #resultTerminal,
+            #resultTerminalEscaped {
+                font-size: 8px;
+                padding: 15px;
+                max-height: 500px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab {
+                padding: 10px 15px;
+                font-size: 0.75em;
+                white-space: nowrap;
+            }
+
+            .note {
+                font-size: 0.75em;
+                padding: 10px;
+            }
+
+            .info-box {
+                font-size: 0.75em;
+                padding: 12px;
+                word-break: break-word;
+            }
+
+            .option-group label {
+                font-size: 0.8em;
+            }
+
+            .checkbox-option label {
+                font-size: 0.8em;
+            }
+
+            .button {
+                padding: 14px 20px;
+                font-size: 0.8em;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #fff;
+            display: none;
+            padding: 60px;
+        }
+
+        .spinner {
+            border: 2px solid #333;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #fff;
+            background: #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #f00;
+        }
+
+        .info-box {
+            background: #000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            font-size: 0.8em;
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: #000;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: color 0.2s;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab:hover {
+            color: #fff;
+        }
+
+        .tab.active {
+            background: #000;
+            color: #fff;
+            border-bottom: 2px solid #fff;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #333;
+            border-top: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .ansi-black { color: #000000; }
+        .ansi-red { color: #cd0000; }
+        .ansi-green { color: #00cd00; }
+        .ansi-yellow { color: #cdcd00; }
+        .ansi-blue { color: #0000ee; }
+        .ansi-magenta { color: #cd00cd; }
+        .ansi-cyan { color: #00cdcd; }
+        .ansi-white { color: #e5e5e5; }
+        .ansi-bright-black { color: #7f7f7f; }
+        .ansi-bright-red { color: #ff0000; }
+        .ansi-bright-green { color: #00ff00; }
+        .ansi-bright-yellow { color: #ffff00; }
+        .ansi-bright-blue { color: #5c5cff; }
+        .ansi-bright-magenta { color: #ff00ff; }
+        .ansi-bright-cyan { color: #00ffff; }
+        .ansi-bright-white { color: #ffffff; }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.85em;
+        }
+
+        .note {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 15px;
+            padding: 12px;
+            border: 1px solid #333;
+            line-height: 1.5;
+        }
+
+        .warning {
+            border-color: #f00;
+        }
+
+        #resultColored,
+        #resultTerminal,
+        #resultTerminalEscaped {
+            background: #000;
+            color: #fff;
+            padding: 20px;
+            overflow-x: auto;
+            white-space: pre;
+            font-size: 10px;
+            line-height: 1.1;
+            max-height: 700px;
+            overflow-y: auto;
+            font-family: 'Courier New', 'Consolas', monospace;
+            border: 1px solid #333;
+            word-break: break-all;
+        }
+
+        #resultTerminalEscaped {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        #placeholder {
+            text-align: center;
+            padding: 100px 20px;
+            color: #666;
+        }
+
+        #placeholder h3 {
+            font-weight: normal;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        #placeholder p {
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ASCII ART CONVERTER</h1>
+        <p class="subtitle">Transform images into ASCII art with terminal colors</p>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>Upload & Configure</h2>
+                <div class="panel-content">
+                    <div class="upload-area" id="uploadArea">
+                        <h3>Drop image here or click to upload</h3>
+                        <input type="file" id="fileInput" accept="image/*">
+                    </div>
+
+                    <div class="options-section">
+                        <div class="option-group">
+                            <label>Width (characters)</label>
+                            <input type="range" id="widthSlider" min="40" max="200" value="80" step="10">
+                            <div class="value-display">Current: <span id="widthValue">80</span></div>
+                        </div>
+
+                        <div class="option-group">
+                            <label>Height (lines)</label>
+                            <input type="range" id="heightSlider" min="30" max="150" value="60" step="10">
+                            <div class="value-display">Current: <span id="heightValue">60</span></div>
+                        </div>
+
+                        <div class="option-group">
+                            <label>Edge Detection Threshold</label>
+                            <input type="range" id="edgeSlider" min="0" max="4" value="4" step="0.1">
+                            <div class="value-display">Current: <span id="edgeValue">4.0</span> (4.0 = disabled)</div>
+                        </div>
+
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="colorCheckbox" checked>
+                            <label for="colorCheckbox">Terminal Colors</label>
+                        </div>
+
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="useEdgeCheckbox">
+                            <label for="useEdgeCheckbox">Edge Detection</label>
+                        </div>
+                    </div>
+
+                    <button class="button" id="convertBtn" disabled>Convert</button>
+
+                    <div class="info-box" style="margin-top: 20px;">
+                        <strong>API Endpoint</strong><br>
+                        <span id="apiEndpointDisplay">Configure API endpoint</span><br><br>
+                        <strong>Parameters</strong><br>
+                        width or w - Output width (10-500)<br>
+                        height or h - Output height (10-500)<br>
+                        colors=true - Enable 24-bit colors<br>
+                        et=1.5 - Edge threshold (0.0-4.0)
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Result</h2>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Converting...</p>
+                </div>
+                
+                <div class="error" id="error"></div>
+
+                <div id="resultContainer" style="display: none;">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="plain">Plain</button>
+                        <button class="tab" data-tab="colored">Colored</button>
+                        <button class="tab" data-tab="terminal">Terminal</button>
+                    </div>
+
+                    <div class="tab-content active" id="plainTab">
+                        <div class="action-buttons">
+                            <button class="button" onclick="copyAscii()">Copy</button>
+                            <button class="button" onclick="downloadAscii()">Download</button>
+                        </div>
+                        <div id="result"></div>
+                    </div>
+
+                    <div class="tab-content" id="coloredTab">
+                        <div class="action-buttons">
+                            <button class="button" onclick="copyAscii()">Copy</button>
+                            <button class="button" onclick="downloadAscii()">Download</button>
+                        </div>
+                        <div id="resultColored"></div>
+                    </div>
+
+                    <div class="tab-content" id="terminalTab">
+                        <div class="action-buttons">
+                            <button class="button" onclick="copyRawAnsi()">Copy Raw</button>
+                            <button class="button" onclick="copyEscapedText()">Copy Escaped</button>
+                            <button class="button" onclick="downloadTerminal()">Download</button>
+                        </div>
+                        
+                        <div class="note">
+                            <strong>Copy Raw:</strong> Copies actual ANSI escape codes (contains real ESC bytes: 0x1B). Paste into terminal to see colors.<br><br>
+                            <strong>Copy Escaped:</strong> Copies text with visible escape sequences (\\x1b becomes literal text). Paste into text editor to see/share the escape codes.<br><br>
+                            <strong>Download:</strong> Saves as .txt file with raw ANSI codes. Run: cat filename.txt in terminal to display with colors.
+                        </div>
+
+                        <div class="checkbox-option" style="margin-bottom: 15px;">
+                            <input type="checkbox" id="showEscapesCheckbox">
+                            <label for="showEscapesCheckbox">Show Escape Sequences</label>
+                        </div>
+
+                        <pre id="resultTerminalEscaped" style="display:none;"></pre>
+                        <pre id="resultTerminal" style="display:none;"></pre>
+                    </div>
+                </div>
+
+                <div id="placeholder">
+                    <h3>No ASCII art yet</h3>
+                    <p>Upload an image to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const result = document.getElementById('result');
+        const resultColored = document.getElementById('resultColored');
+        const resultContainer = document.getElementById('resultContainer');
+        const placeholder = document.getElementById('placeholder');
+        const widthSlider = document.getElementById('widthSlider');
+        const widthValue = document.getElementById('widthValue');
+        const heightSlider = document.getElementById('heightSlider');
+        const heightValue = document.getElementById('heightValue');
+        const edgeSlider = document.getElementById('edgeSlider');
+        const edgeValue = document.getElementById('edgeValue');
+        const colorCheckbox = document.getElementById('colorCheckbox');
+        const useEdgeCheckbox = document.getElementById('useEdgeCheckbox');
+        
+        let selectedFile = null;
+        let currentAscii = '';
+        let currentAsciiColored = '';
+
+        // Configure API URL - Update this to your backend endpoint
+        // For local development: http://localhost:5001/api/convert
+        // For production: https://your-api-domain.com/api/convert
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5001/api/convert'
+            : `${window.location.protocol}//${window.location.host}/api/convert`;
+
+        widthSlider.addEventListener('input', (e) => {
+            widthValue.textContent = e.target.value;
+        });
+
+        heightSlider.addEventListener('input', (e) => {
+            heightValue.textContent = e.target.value;
+        });
+
+        edgeSlider.addEventListener('input', (e) => {
+            edgeValue.textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        // Update API endpoint display
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiEndpointDisplay = document.getElementById('apiEndpointDisplay');
+            if (apiEndpointDisplay) {
+                apiEndpointDisplay.textContent = `POST ${API_URL}`;
+            }
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file');
+                return;
+            }
+            
+            selectedFile = file;
+            uploadArea.innerHTML = `<div class="filename">${file.name}</div><div class="status">Ready to convert</div>`;
+            
+            convertBtn.disabled = false;
+            error.style.display = 'none';
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.style.display = 'block';
+            resultContainer.style.display = 'none';
+            placeholder.style.display = 'block';
+        }
+
+        function showResult(plainAscii, coloredAscii) {
+            currentAscii = plainAscii;
+            currentAsciiColored = coloredAscii;
+
+            result.textContent = plainAscii;
+            resultColored.innerHTML = ansiToHtml(coloredAscii);
+
+            const terminalRaw = document.getElementById('resultTerminal');
+            const terminalEscaped = document.getElementById('resultTerminalEscaped');
+            const showEscapesCheckbox = document.getElementById('showEscapesCheckbox');
+
+            terminalRaw.textContent = coloredAscii || '';
+
+            let escapedVisible = '';
+            if (coloredAscii) {
+                escapedVisible = coloredAscii.replace(/\x1b/g, '\\x1b').replace(/\u001b/g, '\\x1b');
+            }
+            terminalEscaped.textContent = escapedVisible;
+
+            showEscapesCheckbox.checked = true;
+            terminalEscaped.style.display = showEscapesCheckbox.checked ? 'block' : 'none';
+            terminalRaw.style.display = showEscapesCheckbox.checked ? 'none' : 'block';
+
+            resultContainer.style.display = 'block';
+            placeholder.style.display = 'none';
+            error.style.display = 'none';
+        }
+
+        function ansiToHtml(text) {
+            const ansiMap = {
+                '30': 'ansi-black', '31': 'ansi-red', '32': 'ansi-green', '33': 'ansi-yellow',
+                '34': 'ansi-blue', '35': 'ansi-magenta', '36': 'ansi-cyan', '37': 'ansi-white',
+                '90': 'ansi-bright-black', '91': 'ansi-bright-red', '92': 'ansi-bright-green',
+                '93': 'ansi-bright-yellow', '94': 'ansi-bright-blue', '95': 'ansi-bright-magenta',
+                '96': 'ansi-bright-cyan', '97': 'ansi-bright-white'
+            };
+
+            let html = '';
+            let currentStyle = '';
+            
+            const regex = /\x1B\[(?:38;2;(\d+);(\d+);(\d+)|(\d+))m/g;
+            let lastIndex = 0;
+            let match;
+
+            while ((match = regex.exec(text)) !== null) {
+                html += escapeHtml(text.substring(lastIndex, match.index));
+                
+                if (match[1] !== undefined) {
+                    const r = match[1];
+                    const g = match[2];
+                    const b = match[3];
+                    
+                    if (currentStyle) html += '</span>';
+                    html += `<span style="color: rgb(${r}, ${g}, ${b});">`;
+                    currentStyle = 'rgb';
+                } else {
+                    const code = match[4];
+                    if (code === '0') {
+                        if (currentStyle) html += '</span>';
+                        currentStyle = '';
+                    } else if (ansiMap[code]) {
+                        if (currentStyle) html += '</span>';
+                        currentStyle = ansiMap[code];
+                        html += `<span class="${currentStyle}">`;
+                    }
+                }
+                
+                lastIndex = regex.lastIndex;
+            }
+            
+            html += escapeHtml(text.substring(lastIndex));
+            if (currentStyle) html += '</span>';
+            
+            return html;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, (char) => {
+                const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                return entities[char];
+            });
+        }
+
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                showError('Please select a file first');
+                return;
+            }
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            resultContainer.style.display = 'none';
+            placeholder.style.display = 'none';
+            convertBtn.disabled = true;
+
+            const width = widthSlider.value;
+            const height = heightSlider.value;
+            const useColors = colorCheckbox.checked;
+            const useEdge = useEdgeCheckbox.checked;
+            const edgeThreshold = useEdge ? edgeSlider.value : null;
+
+            try {
+                const formData1 = new FormData();
+                formData1.append('image', selectedFile);
+                
+                let url1 = `${API_URL}?width=${width}&height=${height}`;
+                if (useEdge && edgeThreshold) url1 += `&et=${edgeThreshold}`;
+                
+                const response1 = await fetch(url1, {
+                    method: 'POST',
+                    body: formData1
+                });
+
+                let coloredAscii = '';
+                if (useColors) {
+                    const formData2 = new FormData();
+                    formData2.append('image', selectedFile);
+                    
+                    let url2 = `${API_URL}?width=${width}&height=${height}&colors=true`;
+                    if (useEdge && edgeThreshold) url2 += `&et=${edgeThreshold}`;
+                    
+                    const response2 = await fetch(url2, {
+                        method: 'POST',
+                        body: formData2
+                    });
+                    
+                    if (response2.ok) {
+                        const data2 = await response2.json();
+                        coloredAscii = data2.ascii;
+                    }
+                }
+
+                if (response1.ok) {
+                    const data1 = await response1.json();
+                    showResult(data1.ascii, coloredAscii || data1.ascii);
+                } else {
+                    const data1 = await response1.json();
+                    showError(data1.error || 'Failed to convert image');
+                }
+            } catch (err) {
+                showError('Network error: ' + err.message);
+            } finally {
+                loading.style.display = 'none';
+                convertBtn.disabled = false;
+            }
+        });
+
+        function copyAscii() {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            let textToCopy;
+
+            if (activeTab === 'plain') {
+                textToCopy = currentAscii;
+            } else if (activeTab === 'colored') {
+                textToCopy = currentAsciiColored;
+            } else {
+                textToCopy = currentAscii;
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                let btn = null;
+                try { btn = event ? event.target : null; } catch (e) { btn = null; }
+                const originalText = btn ? btn.textContent : '';
+
+                if (btn) {
+                    btn.textContent = 'Copied';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            }).catch(err => {
+                showError('Clipboard write failed: ' + err.message);
+            });
+        }
+
+        function copyRawAnsi() {
+            const textToCopy = currentAsciiColored;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                let btn = null;
+                try { btn = event ? event.target : null; } catch (e) { btn = null; }
+                const originalText = btn ? btn.textContent : '';
+
+                if (btn) {
+                    btn.textContent = 'Copied';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            }).catch(err => {
+                showError('Clipboard write failed: ' + err.message);
+            });
+        }
+
+        function copyEscapedText() {
+            const textToCopy = document.getElementById('resultTerminalEscaped').textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                let btn = null;
+                try { btn = event ? event.target : null; } catch (e) { btn = null; }
+                const originalText = btn ? btn.textContent : '';
+
+                if (btn) {
+                    btn.textContent = 'Copied';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                    }, 2000);
+                }
+            }).catch(err => {
+                showError('Clipboard write failed: ' + err.message);
+            });
+        }
+
+        function downloadTerminal() {
+            const textToDownload = currentAsciiColored;
+            const filename = `ascii-art-colored-${Date.now()}.txt`;
+            
+            const blob = new Blob([textToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadAscii() {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            let textToDownload;
+            let filename;
+            
+            if (activeTab === 'plain') {
+                textToDownload = currentAscii;
+                filename = `ascii-art-plain-${Date.now()}.txt`;
+            } else if (activeTab === 'terminal') {
+                const raw = document.getElementById('resultTerminal').textContent || currentAsciiColored;
+                textToDownload = raw;
+                filename = `ascii-art-colored-${Date.now()}.txt`;
+            } else {
+                textToDownload = currentAsciiColored;
+                filename = `ascii-art-colored-${Date.now()}.txt`;
+            }
+            
+            const blob = new Blob([textToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('showEscapesCheckbox').addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            const terminalEscaped = document.getElementById('resultTerminalEscaped');
+            const terminalRaw = document.getElementById('resultTerminal');
+
+            terminalEscaped.style.display = checked ? 'block' : 'none';
+            terminalRaw.style.display = checked ? 'none' : 'block';
+        });
+    </script>
+</body>
+</html>
