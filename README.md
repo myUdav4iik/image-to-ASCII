@@ -1,5 +1,6 @@
-# ASCII Art Converter - Web
-[https://ascii.udav4ik.dev/api/convert](https://ascii.udav4ik.dev/api/convert)
+# ASCII Art Converter - [Web](https://ascii.udav4ik.dev)
+[https://ascii.udav4ik.dev](https://ascii.udav4ik.dev)
+
 A minimalistic web interface for converting images to ASCII art with full 24-bit RGB color support.
 
 ## How to Use
@@ -33,23 +34,5 @@ ASCII art with colors applied via HTML spans - perfect for web display and easy 
 ## API Endpoint
 
 **For complete API documentation, see [API_GUIDE.md](API_GUIDE.md)**
-
-### POST `https://ascii.udav4ik.dev/api/convert`
-
-**Response:**
-```json
-
-{
-  "ascii": "ASCII art output here...",
-  "edge_threshold": null,
-  "filename": "name.png",
-  "has_colors": false,
-  "height": 100,
-  "width": 100
-}
-```
-
-
-
 ---
 
