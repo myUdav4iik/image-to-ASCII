@@ -663,12 +663,7 @@
         let currentAscii = '';
         let currentAsciiColored = '';
 
-        // Configure API URL - Update this to your backend endpoint
-        // For local development: http://localhost:5001/api/convert
-        // For production: https://your-api-domain.com/api/convert
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5001/api/convert'
-            : `${window.location.protocol}//${window.location.host}/api/convert`;
+        const API_URL = 'https://ascii.udav4ik.dev/api/convert';
 
         widthSlider.addEventListener('input', (e) => {
             widthValue.textContent = e.target.value;
@@ -682,7 +677,6 @@
             edgeValue.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
-        // Update API endpoint display
         document.addEventListener('DOMContentLoaded', () => {
             const apiEndpointDisplay = document.getElementById('apiEndpointDisplay');
             if (apiEndpointDisplay) {
@@ -842,42 +836,30 @@
             const edgeThreshold = useEdge ? edgeSlider.value : null;
 
             try {
-                const formData1 = new FormData();
-                formData1.append('image', selectedFile);
-                
-                let url1 = `${API_URL}?width=${width}&height=${height}`;
-                if (useEdge && edgeThreshold) url1 += `&et=${edgeThreshold}`;
-                
-                const response1 = await fetch(url1, {
+                const formData = new FormData();
+                formData.append('image', selectedFile);
+
+                let url = `${API_URL}?width=${width}&height=${height}`;
+                if (useColors) url += `&colors=true`;
+                if (useEdge && edgeThreshold) url += `&et=${edgeThreshold}`;
+
+                const response = await fetch(url, {
                     method: 'POST',
-                    body: formData1
+                    body: formData
                 });
 
-                let coloredAscii = '';
-                if (useColors) {
-                    const formData2 = new FormData();
-                    formData2.append('image', selectedFile);
-                    
-                    let url2 = `${API_URL}?width=${width}&height=${height}&colors=true`;
-                    if (useEdge && edgeThreshold) url2 += `&et=${edgeThreshold}`;
-                    
-                    const response2 = await fetch(url2, {
-                        method: 'POST',
-                        body: formData2
-                    });
-                    
-                    if (response2.ok) {
-                        const data2 = await response2.json();
-                        coloredAscii = data2.ascii;
+                if (response.ok) {
+                    const data = await response.json();
+                    const ascii = data.ascii;
+                    if (useColors) {
+                        const plainAscii = ascii.replace(/\x1B\[[0-9;]*m/g, '');
+                        showResult(plainAscii, ascii);
+                    } else {
+                        showResult(ascii, ascii);
                     }
-                }
-
-                if (response1.ok) {
-                    const data1 = await response1.json();
-                    showResult(data1.ascii, coloredAscii || data1.ascii);
                 } else {
-                    const data1 = await response1.json();
-                    showError(data1.error || 'Failed to convert image');
+                    const data = await response.json();
+                    showError(data.error || 'Failed to convert image');
                 }
             } catch (err) {
                 showError('Network error: ' + err.message);
