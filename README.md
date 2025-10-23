@@ -1,4 +1,4 @@
-# ASCII Art Converter - [Web](https://ascii.udav4ik.dev)
+# ASCII Art Converter - Web
 [https://ascii.udav4ik.dev](https://ascii.udav4ik.dev)
 
 A minimalistic web interface for converting images to ASCII art with full 24-bit RGB color support.
@@ -32,7 +32,4 @@ ASCII art with colors applied via HTML spans - perfect for web display and easy 
 
 
 ## API Endpoint
-
-**For complete API documentation, see [API_GUIDE.md](API_GUIDE.md)**
----
-
+  **For complete API documentation, see [API_GUIDE.md](API_GUIDE.md)**

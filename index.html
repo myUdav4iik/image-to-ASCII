@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASCII Art Converter</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20251019">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +16,7 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
             background: #000;
             color: #fff;
             min-height: 100vh;
@@ -203,36 +207,52 @@
             width: 100%;
             margin-bottom: 8px;
             background: transparent;
+            appearance: none;
             -webkit-appearance: none;
-            height: 2px;
+            height: 4px;
+            cursor: pointer;
         }
 
         .option-group input[type="range"]::-webkit-slider-track {
-            background: #333;
-            height: 2px;
+            background: #222;
+            height: 4px;
+            border-radius: 2px;
         }
 
         .option-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: #fff;
             cursor: pointer;
-            border-radius: 0;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .option-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
         }
 
         .option-group input[type="range"]::-moz-range-track {
-            background: #333;
-            height: 2px;
+            background: #222;
+            height: 4px;
+            border-radius: 2px;
         }
 
         .option-group input[type="range"]::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
+            width: 16px;
+            height: 16px;
             background: #fff;
             cursor: pointer;
             border: none;
-            border-radius: 0;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .option-group input[type="range"]::-moz-range-thumb:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
         }
 
         .option-group .value-display {
@@ -247,15 +267,52 @@
         }
 
         .checkbox-option input[type="checkbox"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 36px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin-right: 12px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid #666;
+        }
+
+        .checkbox-option input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #777;
+            top: 50%;
+            left: 2px;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-option input[type="checkbox"]:hover {
+            border-color: #777;
+        }
+
+        .checkbox-option input[type="checkbox"]:checked {
+            background: #fff;
+            border-color: #fff;
+        }
+
+        .checkbox-option input[type="checkbox"]:checked::before {
+            background: #000;
+            left: 18px;
         }
 
         .checkbox-option label {
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
         }
 
         .button {
@@ -268,7 +325,7 @@
             font-weight: normal;
             transition: opacity 0.2s;
             width: 100%;
-            font-family: 'Courier New', monospace;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -285,17 +342,21 @@
         }
 
         #result {
-            background: #000;
+            background: #050505;
             color: #fff;
-            padding: 20px;
+            padding: 24px;
             overflow-x: auto;
             white-space: pre;
             font-size: 10px;
             line-height: 1.1;
             max-height: 700px;
             overflow-y: auto;
-            border: 1px solid #333;
-            font-family: 'Courier New', 'Consolas', monospace;
+            border: 1px solid #222;
+            font-family: 'JetBrains Mono', 'Consolas', monospace;
+            border-radius: 4px;
+            /* Disable font ligatures to keep characters separate, like in the "===" example */
+            font-variant-ligatures: none;
+            font-feature-settings: "liga" 0, "calt" 0;
         }
 
         @media (max-width: 768px) {
@@ -406,7 +467,7 @@
             border: none;
             color: #666;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
             transition: color 0.2s;
             font-size: 0.85em;
             text-transform: uppercase;
@@ -427,7 +488,7 @@
         .tab-content {
             display: none;
             padding: 20px;
-            border: 1px solid #333;
+            /* border: 1px solid #333; */
             border-top: none;
         }
 
@@ -482,16 +543,20 @@
         #resultTerminalEscaped {
             background: #000;
             color: #fff;
-            padding: 20px;
+            padding: 24px;
             overflow-x: auto;
             white-space: pre;
             font-size: 10px;
             line-height: 1.1;
             max-height: 700px;
             overflow-y: auto;
-            font-family: 'Courier New', 'Consolas', monospace;
-            border: 1px solid #333;
+            font-family: 'JetBrains Mono', 'Consolas', 'Monaco', monospace;
+            border: 1px solid #222;
+            border-radius: 4px;
             word-break: break-all;
+            /* Disable font ligatures to keep characters separate, like in the "===" example */
+            font-variant-ligatures: none;
+            font-feature-settings: "liga" 0, "calt" 0;
         }
 
         #resultTerminalEscaped {
@@ -566,7 +631,7 @@
 
                     <div class="info-box" style="margin-top: 20px;">
                         <strong>API Endpoint</strong><br>
-                        <span id="apiEndpointDisplay">Configure API endpoint</span><br><br>
+                        <span id="apiEndpointDisplay">POST /api/convert</span><br><br>
                         <strong>Parameters</strong><br>
                         width or w - Output width (10-500)<br>
                         height or h - Output height (10-500)<br>
@@ -638,6 +703,12 @@
                 </div>
             </div>
         </div>
+
+        <!-- Ko-fi Widget -->
+        <div style="text-align: left;">
+            <script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script>
+            <script type='text/javascript'>kofiwidget2.init('Buy a Kebab for me', '#000000', 'A0A51N0TJQ');kofiwidget2.draw();</script>
+        </div>
     </div>
 
     <script>
@@ -663,7 +734,9 @@
         let currentAscii = '';
         let currentAsciiColored = '';
 
-        const API_URL = 'https://ascii.udav4ik.dev/api/convert';
+        // Auto-detect API URL - use current host if accessed via domain, otherwise localhost
+        const API_URL = 'https://ascii.udav4ik.dev/api/convert'
+            
 
         widthSlider.addEventListener('input', (e) => {
             widthValue.textContent = e.target.value;
@@ -677,6 +750,7 @@
             edgeValue.textContent = parseFloat(e.target.value).toFixed(1);
         });
 
+        // Update API endpoint display
         document.addEventListener('DOMContentLoaded', () => {
             const apiEndpointDisplay = document.getElementById('apiEndpointDisplay');
             if (apiEndpointDisplay) {
@@ -836,30 +910,42 @@
             const edgeThreshold = useEdge ? edgeSlider.value : null;
 
             try {
-                const formData = new FormData();
-                formData.append('image', selectedFile);
-
-                let url = `${API_URL}?width=${width}&height=${height}`;
-                if (useColors) url += `&colors=true`;
-                if (useEdge && edgeThreshold) url += `&et=${edgeThreshold}`;
-
-                const response = await fetch(url, {
+                const formData1 = new FormData();
+                formData1.append('image', selectedFile);
+                
+                let url1 = `${API_URL}?width=${width}&height=${height}`;
+                if (useEdge && edgeThreshold) url1 += `&et=${edgeThreshold}`;
+                
+                const response1 = await fetch(url1, {
                     method: 'POST',
-                    body: formData
+                    body: formData1
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    const ascii = data.ascii;
-                    if (useColors) {
-                        const plainAscii = ascii.replace(/\x1B\[[0-9;]*m/g, '');
-                        showResult(plainAscii, ascii);
-                    } else {
-                        showResult(ascii, ascii);
+                let coloredAscii = '';
+                if (useColors) {
+                    const formData2 = new FormData();
+                    formData2.append('image', selectedFile);
+                    
+                    let url2 = `${API_URL}?width=${width}&height=${height}&colors=true`;
+                    if (useEdge && edgeThreshold) url2 += `&et=${edgeThreshold}`;
+                    
+                    const response2 = await fetch(url2, {
+                        method: 'POST',
+                        body: formData2
+                    });
+                    
+                    if (response2.ok) {
+                        const data2 = await response2.json();
+                        coloredAscii = data2.ascii;
                     }
+                }
+
+                if (response1.ok) {
+                    const data1 = await response1.json();
+                    showResult(data1.ascii, coloredAscii || data1.ascii);
                 } else {
-                    const data = await response.json();
-                    showError(data.error || 'Failed to convert image');
+                    const data1 = await response1.json();
+                    showError(data1.error || 'Failed to convert image');
                 }
             } catch (err) {
                 showError('Network error: ' + err.message);
@@ -898,6 +984,7 @@
         }
 
         function copyRawAnsi() {
+            // Copy raw ANSI codes (actual escape bytes for terminal)
             const textToCopy = currentAsciiColored;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -917,6 +1004,7 @@
         }
 
         function copyEscapedText() {
+            // Copy the escaped version with visible \x1b sequences as plain text
             const textToCopy = document.getElementById('resultTerminalEscaped').textContent;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -936,6 +1024,7 @@
         }
 
         function downloadTerminal() {
+            // Download raw ANSI codes as .txt file
             const textToDownload = currentAsciiColored;
             const filename = `ascii-art-colored-${Date.now()}.txt`;
             
