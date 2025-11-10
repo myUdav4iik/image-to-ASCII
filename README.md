@@ -30,6 +30,17 @@ ASCII art with colors applied via HTML spans - perfect for web display and easy 
   - **Copy Escaped**: Copies visible `\x1b` sequences (will show colors if is pasted inside echo"|")
   - **Download**: Saves file with raw ANSI codes - run `cat filename.txt` in terminal to view with colors.
 
+## Statistics Dashboard
+[https://ascii.udav4ik.dev/dashboard.html](https://ascii.udav4ik.dev/dashboard.html)
+
+View real-time statistics about API usage:
+- **Total Conversions**: All-time conversion count
+- **Today's Conversions**: Daily activity with comparison to yesterday
+- **Unique Users**: Number of unique IP addresses
+- **Average Per Day**: 30-day average conversion rate
+- **Charts**: Daily conversions and overall growth trends
+
+**Real-time Updates**: The dashboard uses Server-Sent Events (SSE) for instant updates without page refresh.
 
 ## API Endpoint
   **For complete API documentation, see [API_GUIDE.md](API_GUIDE.md)**

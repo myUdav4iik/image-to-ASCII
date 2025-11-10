@@ -360,14 +360,6 @@
         }
 
         @media (max-width: 768px) {
-            #result,
-            #resultColored,
-            #resultTerminal,
-            #resultTerminalEscaped {
-                font-size: 8px;
-                padding: 15px;
-                max-height: 500px;
-            }
 
             .action-buttons {
                 flex-direction: column;
@@ -562,7 +554,7 @@
         #resultTerminalEscaped {
             white-space: pre-wrap;
             word-break: break-word;
-            font-size: 11px;
+            font-size: 10px;
             line-height: 1.2;
         }
 
@@ -612,18 +604,8 @@
 
                         <div class="option-group">
                             <label>Edge Detection Threshold</label>
-                            <input type="range" id="edgeSlider" min="0" max="4" value="4" step="0.1">
-                            <div class="value-display">Current: <span id="edgeValue">4.0</span> (4.0 = disabled)</div>
-                        </div>
-
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="colorCheckbox" checked>
-                            <label for="colorCheckbox">Terminal Colors</label>
-                        </div>
-
-                        <div class="checkbox-option">
-                            <input type="checkbox" id="useEdgeCheckbox">
-                            <label for="useEdgeCheckbox">Edge Detection</label>
+                            <input type="range" id="edgeSlider" min="0" max="4" value="4.0" step="0.1">
+                            <div class="value-display">Current: <span id="edgeValue">4.0</span> (lower = more edges)</div>
                         </div>
                     </div>
 
@@ -636,8 +618,9 @@
                         width or w - Output width (10-500)<br>
                         height or h - Output height (10-500)<br>
                         colors=true - Enable 24-bit colors<br>
-                        et=1.5 - Edge threshold (0.0-4.0)
+                        edge=4.0 - Edge threshold (0.0-4.0)
                     </div>
+                    <a href="/dashboard.html" style="color: #666; font-size: 0.75em; text-transform: uppercase;">View Stats →</a>
                 </div>
             </div>
 
@@ -653,12 +636,12 @@
 
                 <div id="resultContainer" style="display: none;">
                     <div class="tabs">
-                        <button class="tab active" data-tab="plain">Plain</button>
-                        <button class="tab" data-tab="colored">Colored</button>
+                        <button class="tab" data-tab="plain">Plain</button>
+                        <button class="tab active" data-tab="colored">Colored</button>
                         <button class="tab" data-tab="terminal">Terminal</button>
                     </div>
 
-                    <div class="tab-content active" id="plainTab">
+                    <div class="tab-content" id="plainTab">
                         <div class="action-buttons">
                             <button class="button" onclick="copyAscii()">Copy</button>
                             <button class="button" onclick="downloadAscii()">Download</button>
@@ -666,7 +649,7 @@
                         <div id="result"></div>
                     </div>
 
-                    <div class="tab-content" id="coloredTab">
+                    <div class="tab-content active" id="coloredTab">
                         <div class="action-buttons">
                             <button class="button" onclick="copyAscii()">Copy</button>
                             <button class="button" onclick="downloadAscii()">Download</button>
@@ -727,8 +710,6 @@
         const heightValue = document.getElementById('heightValue');
         const edgeSlider = document.getElementById('edgeSlider');
         const edgeValue = document.getElementById('edgeValue');
-        const colorCheckbox = document.getElementById('colorCheckbox');
-        const useEdgeCheckbox = document.getElementById('useEdgeCheckbox');
         
         let selectedFile = null;
         let currentAscii = '';
@@ -747,7 +728,8 @@
         });
 
         edgeSlider.addEventListener('input', (e) => {
-            edgeValue.textContent = parseFloat(e.target.value).toFixed(1);
+            const value = parseFloat(e.target.value);
+            edgeValue.textContent = value.toFixed(1);
         });
 
         // Update API endpoint display
@@ -905,47 +887,31 @@
 
             const width = widthSlider.value;
             const height = heightSlider.value;
-            const useColors = colorCheckbox.checked;
-            const useEdge = useEdgeCheckbox.checked;
-            const edgeThreshold = useEdge ? edgeSlider.value : null;
+            const edgeThreshold = edgeSlider.value;
 
             try {
-                const formData1 = new FormData();
-                formData1.append('image', selectedFile);
+                // Always request with colors=true and edge detection
+                const formData = new FormData();
+                formData.append('image', selectedFile);
                 
-                let url1 = `${API_URL}?width=${width}&height=${height}`;
-                if (useEdge && edgeThreshold) url1 += `&et=${edgeThreshold}`;
+                let url = `${API_URL}?width=${width}&height=${height}&colors=true&et=${edgeThreshold}`;
                 
-                const response1 = await fetch(url1, {
+                const response = await fetch(url, {
                     method: 'POST',
-                    body: formData1
+                    body: formData
                 });
 
-                let coloredAscii = '';
-                if (useColors) {
-                    const formData2 = new FormData();
-                    formData2.append('image', selectedFile);
+                if (response.ok) {
+                    const data = await response.json();
+                    const coloredAscii = data.ascii;
                     
-                    let url2 = `${API_URL}?width=${width}&height=${height}&colors=true`;
-                    if (useEdge && edgeThreshold) url2 += `&et=${edgeThreshold}`;
+                    // Strip ANSI codes for plain version
+                    const plainAscii = coloredAscii.replace(/\x1B\[[0-9;]*m/g, '');
                     
-                    const response2 = await fetch(url2, {
-                        method: 'POST',
-                        body: formData2
-                    });
-                    
-                    if (response2.ok) {
-                        const data2 = await response2.json();
-                        coloredAscii = data2.ascii;
-                    }
-                }
-
-                if (response1.ok) {
-                    const data1 = await response1.json();
-                    showResult(data1.ascii, coloredAscii || data1.ascii);
+                    showResult(plainAscii, coloredAscii);
                 } else {
-                    const data1 = await response1.json();
-                    showError(data1.error || 'Failed to convert image');
+                    const data = await response.json();
+                    showError(data.error || 'Failed to convert image');
                 }
             } catch (err) {
                 showError('Network error: ' + err.message);
